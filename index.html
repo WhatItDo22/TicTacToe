@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tic Tac Toe - Part 3</title>
+    <title>Tic Tac Toe Game</title>
     <style>
         .grid-container {
             display: grid;
@@ -21,6 +21,12 @@
             font-size: 2em;
             cursor: pointer;
         }
+        .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        }
+
         .square:hover {
             background-color: #e0e0e0;
         }
@@ -34,11 +40,6 @@
             width: 200px;
             padding: 10px;
         }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -49,57 +50,93 @@
     <button onclick="startGame()">Start Game</button>
 </div>
 
-<div class="turn-indicator" id="turnIndicator">X's Turn</div>
+<div class="turn-indicator">X's Turn</div>
 
 <div id="gameBoard" class="grid-container">
-    <script>
-        const NUM_SQUARES = 9;
-        for (i=0; i<NUM_SQUARES; i++)
-        {
-        id = "sq"+i;
-        document.write( "<div class='square' id='" + id + "'></div>" );
-        }
 
-    </script>
 </div>
 
 <div class="win-display"></div>
 
 <script>
-    let turn = "X"; 
-    let squaresFilled = 0; 
-    function addClickHandlers() {
-        const squares = document.querySelectorAll('.square');
-        squares.forEach(square => {
-            square.addEventListener('click', function() {
-                if (!this.textContent) {
-                    this.textContent = turn;
-                    turn = turn === "X" ? "O" : "X";
-                    document.getElementById('turnIndicator').textContent = `${turn}'s Turn`;
-                    squaresFilled++;
-                    if (squaresFilled === NUM_SQUARES) {
-                        alert('Game Over');
-                    }
-                }
-            });
-        });
+    const NUM_SQUARES = 9;
+    let turn = "X";
+    let gameOver = false;
+    
+    function createBoard() {
+        let squaresHTML = '';
+        for (let i = 0; i < NUM_SQUARES; i++) {
+            let id = "sq" + i;
+            squaresHTML += "<div class='square' id='" + id + "'></div>";
+        }
+        document.getElementById('gameBoard').innerHTML = squaresHTML;
+
+        attachEventListeners();
+    }
+    function checkWin() {
+    const squares = document.querySelectorAll('.square');
+    let moves = Array.from(squares, square => square.textContent || '-');
+    let winConditions = [
+        moves.slice(0, 3).join(''),
+        moves.slice(3, 6).join(''),
+        moves.slice(6, 9).join(''),
+        moves[0] + moves[3] + moves[6],
+        moves[1] + moves[4] + moves[7],
+        moves[2] + moves[5] + moves[8],
+        moves[0] + moves[4] + moves[8],
+        moves[2] + moves[4] + moves[6],
+    ];
+
+    winConditions.forEach(condition => {
+        if (condition === "XXX" || condition === "OOO") {
+            document.querySelector('.win-display').textContent = turn + ' wins!';
+            gameOver = true;
+        }
+    });
+
+    if (!gameOver && !moves.includes('-')) {
+        document.querySelector('.win-display').textContent = 'Stalemate!';
+        gameOver = true;
     }
 
+    if (gameOver) {
+        squares.forEach(square => {
+            square.style.pointerEvents = 'none';
+        });
+    }
+}
+
+function squareClicked() {
+    if (this.textContent === '' && !gameOver) {
+        this.textContent = turn;
+        checkWin();
+        turn = turn === "X" ? "O" : "X";
+        document.querySelector('.turn-indicator').textContent = "Turn: " + turn;
+    }
+}
+    
+    function attachEventListeners() {
+        document.querySelectorAll('.square').forEach(square => {
+            square.addEventListener('click', squareClicked);
+        });
+    }
+    
     function startGame() {
-        const squares = document.querySelectorAll('.square');
-        squares.forEach(square => {
+        document.querySelector('.win-display').textContent = '';
+        turn = Math.random() > 0.5 ? "X" : "O";
+        document.querySelector('.turn-indicator').textContent = "Turn: " + turn;
+        gameOver = false;
+        document.querySelectorAll('.square').forEach(square => {
             square.textContent = '';
+            square.style.pointerEvents = 'auto';
         });
-        turn = Math.random() < 0.5 ? "X" : "O";
-        document.getElementById('turnIndicator').textContent = `${turn}'s Turn`;
-        squaresFilled = 0;
     }
 
-    window.onload = function() {
-        addClickHandlers();
-        startGame();
-    };
-</script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        createBoard(); 
+        startGame(); 
+    });
+    </script>
     
 
 </body>
