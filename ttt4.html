@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe - Part 3</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .square {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            cursor: pointer;
+        }
+        .square:hover {
+            background-color: #e0e0e0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .turn-indicator, .win-display {
+            margin: 20px auto;
+            text-align: center;
+            border: 1px solid black;
+            width: 200px;
+            padding: 10px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Tufts Tic Tac Toe</h1>
+
+<div class="button-container">
+    <button onclick="startGame()">Start Game</button>
+</div>
+
+<div class="turn-indicator" id="turnIndicator">X's Turn</div>
+
+<div id="gameBoard" class="grid-container">
+    <script>
+        const NUM_SQUARES = 9;
+        for (i=0; i<NUM_SQUARES; i++)
+        {
+        id = "sq"+i;
+        document.write( "<div class='square' id='" + id + "'></div>" );
+        }
+
+    </script>
+</div>
+
+<div class="win-display"></div>
+
+<script>
+    let turn = "X"; 
+    let squaresFilled = 0; 
+    function addClickHandlers() {
+        const squares = document.querySelectorAll('.square');
+        squares.forEach(square => {
+            square.addEventListener('click', function() {
+                if (!this.textContent) {
+                    this.textContent = turn;
+                    alert(`Square ${this.id.replace('sq', '')} clicked`);
+                    turn = turn === "X" ? "O" : "X";
+                    document.getElementById('turnIndicator').textContent = `${turn}'s Turn`;
+                    squaresFilled++;
+                    if (squaresFilled === NUM_SQUARES) {
+                        alert('Game Over');
+                    }
+                }
+            });
+        });
+    }
+
+    function startGame() {
+        const squares = document.querySelectorAll('.square');
+        squares.forEach(square => {
+            square.textContent = '';
+        });
+        turn = Math.random() < 0.5 ? "X" : "O";
+        document.getElementById('turnIndicator').textContent = `${turn}'s Turn`;
+        squaresFilled = 0;
+    }
+
+    window.onload = function() {
+        addClickHandlers();
+        startGame();
+    };
+</script>
+    
+
+</body>
+</html>
